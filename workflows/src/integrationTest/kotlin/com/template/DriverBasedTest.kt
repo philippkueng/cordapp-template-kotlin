@@ -1,5 +1,7 @@
 package com.template
 
+import com.template.flows.Initiator
+import com.template.states.TemplateState
 import net.corda.core.identity.CordaX500Name
 import net.corda.core.utilities.getOrThrow
 import net.corda.testing.core.TestIdentity
@@ -27,6 +29,14 @@ class DriverBasedTest {
         // and other important metrics to ensure that your CorDapp is working as intended.
         assertEquals(bankB.name, partyAHandle.resolveName(bankB.name))
         assertEquals(bankA.name, partyBHandle.resolveName(bankA.name))
+
+        // Invoke the flow to issue a TemplateState
+        val partyBWellKnownIdentity = partyBHandle.nodeInfo.legalIdentities.first()
+        val finalizedTx = partyAHandle.rpc.startFlowDynamic(Initiator::class.java, partyBWellKnownIdentity)
+            .returnValue.getOrThrow()
+
+        // Asserting that the
+        assertEquals((finalizedTx.tx.outputStates.first() as TemplateState).msg, "Hello-World")
     }
 
     // Runs a test inside the Driver DSL, which provides useful functions for starting nodes, etc.
