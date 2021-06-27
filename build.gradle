@@ -9,6 +9,8 @@ buildscript { //properties that you need to build the project
         corda_release_version = constants.getProperty("cordaVersion")
         corda_core_release_version = constants.getProperty("cordaCoreVersion")
         corda_gradle_plugins_version = constants.getProperty("gradlePluginsVersion")
+        token_sdk_release_group = constants.getProperty("tokenSdkReleaseGroup")
+        token_sdk_version = constants.getProperty("tokenSdkVersion")
         kotlin_version = constants.getProperty("kotlinVersion")
         junit_version = constants.getProperty("junitVersion")
         quasar_version = constants.getProperty("quasarVersion")
@@ -25,6 +27,7 @@ buildscript { //properties that you need to build the project
         mavenCentral()
         jcenter()
         maven { url 'https://software.r3.com/artifactory/corda-releases' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
     }
 
     dependencies {
@@ -45,6 +48,7 @@ allprojects { //Properties that you need to compile your project (The applicatio
         jcenter()
         mavenCentral()
         maven { url 'https://software.r3.com/artifactory/corda' }
+        maven { url 'https://ci-artifactory.corda.r3cev.com/artifactory/corda-lib' }
         maven { url 'https://jitpack.io' }
     }
 
@@ -90,6 +94,9 @@ dependencies {
     cordaCompile "org.apache.logging.log4j:log4j-slf4j-impl:${log4j_version}"
     cordaCompile "org.apache.logging.log4j:log4j-web:${log4j_version}"
     cordaCompile "org.slf4j:jul-to-slf4j:$slf4j_version"
+
+    cordapp "$token_sdk_release_group:tokens-contracts:$token_sdk_version"
+    cordapp "$token_sdk_release_group:tokens-workflows:$token_sdk_version"
 }
 
 //Task to deploy the nodes in order to bootstrap a network
@@ -104,6 +111,9 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         projectCordapp {
             deploy = false
         }
+        cordapp("$token_sdk_release_group:tokens-contracts:$token_sdk_version")
+        cordapp("$token_sdk_release_group:tokens-workflows:$token_sdk_version")
+        cordapp("$token_sdk_release_group:tokens-money:$token_sdk_version")
         cordapp project(':contracts')
         cordapp project(':workflows')
         runSchemaMigration = true //This configuration is for any CorDapps with custom schema, We will leave this as true to avoid
