@@ -113,7 +113,6 @@ task deployNodes(type: net.corda.plugins.Cordform, dependsOn: ['jar']) {
         }
         cordapp("$token_sdk_release_group:tokens-contracts:$token_sdk_version")
         cordapp("$token_sdk_release_group:tokens-workflows:$token_sdk_version")
-        cordapp("$token_sdk_release_group:tokens-money:$token_sdk_version")
         cordapp project(':contracts')
         cordapp project(':workflows')
         runSchemaMigration = true //This configuration is for any CorDapps with custom schema, We will leave this as true to avoid
